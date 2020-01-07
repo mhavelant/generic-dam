@@ -1,0 +1,7 @@
+access media asset library:
+  title: 'Access media asset library'
+  description: 'Allows access for the media asset library (the frontpage)'
+
+access media asset navigation block:
+  title: 'Access the DAM navigation block'
+  description: 'Allows access for the DAM navigation block'

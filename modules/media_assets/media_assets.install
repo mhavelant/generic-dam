@@ -1,0 +1,27 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Media Library module.
+ */
+
+use Drupal\Core\Config\FileStorage;
+
+/**
+ * Import the "Focus area" vocab.
+ */
+function media_assets_update_8501() {
+  $configPath = config_get_config_directory(CONFIG_SYNC_DIRECTORY);
+  $source = new FileStorage($configPath);
+
+  /** @var \Drupal\Core\Config\ConfigFactoryInterface $configFactory */
+  $configFactory = Drupal::configFactory();
+
+  $config = $configFactory->getEditable('taxonomy.vocabulary.focus_area');
+  $config->setData($source->read('taxonomy.vocabulary.focus_area'));
+  $config->save(TRUE);
+
+  $config = $configFactory->getEditable('language.content_settings.taxonomy_term.focus_area');
+  $config->setData($source->read('language.content_settings.taxonomy_term.focus_area'));
+  $config->save(TRUE);
+}

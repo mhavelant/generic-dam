@@ -1,0 +1,10 @@
+services:
+  media_assets_library.media_entity:
+    class: Drupal\media_assets_library\Normalizer\MediaEntityNormalizer
+    arguments: ['@entity.manager']
+    tags:
+      - { name: normalizer, priority: 9 }
+  media_assets_library.route_subscriber:
+    class: Drupal\media_assets_library\Routing\RouteSubscriber
+    tags:
+      - { name: event_subscriber }

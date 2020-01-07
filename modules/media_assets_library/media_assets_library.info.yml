@@ -1,0 +1,10 @@
+name: "Media Assets Library"
+type: module
+description: Media assets library functionality.
+core: 8.x
+package: Custom
+dependencies:
+  - drupal:system (>=8.4)
+  - drupal:media
+  - drupal:rest
+  - drupal:basic_auth
