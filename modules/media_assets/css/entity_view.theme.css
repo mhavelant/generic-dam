@@ -1,8 +1,6 @@
 /**
  * @file
  * CSS rules for media_assets module.
- *
- * @todo move this to tieto_mp_theme!!!
  */
 
 .media-asset-filter-form .form-item-platform,
@@ -55,9 +53,11 @@
     text-align: center;
     border: 0;
   }
+
   .social-media-assets .media-style {
     padding: 0;
   }
+
   .social-media-assets .media-platform {
     margin-bottom: 1em;
   }
@@ -79,7 +79,7 @@
   background: -o-linear-gradient(45deg, #fed575 0%, #e03a61 50%, #9437bf 100%);
   background: -ms-linear-gradient(45deg, #fed575 0%, #e03a61 50%, #9437bf 100%);
   background: linear-gradient(45deg, #fed575 0%, #e03a61 50%, #9437bf 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fed575', endColorstr='#9437bf', GradientType=1 );
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fed575', endColorstr='#9437bf', GradientType=1);
 }
 
 .social-media-assets .media-platform-ms {
@@ -87,31 +87,28 @@
 }
 
 .social-media-assets .media-platform-other {
-  background-color: #888888;
-}
-.social-media-assets .media-platform-tieto {
-  background-color: #70b5e6;
+  background-color: #888;
 }
 .social-media-assets .media-platform-facebook {
   background-color: #3b5998;
 }
 
 .single .icon--item-in-collection {
-    display: none;
+  display: none;
 }
 
 .controller:not(.single) .icon--item-in-collection {
-    display: none;
-    position: absolute;
-    height: 21px;
-    margin-left: -25px;
+  display: none;
+  position: absolute;
+  height: 21px;
+  margin-left: -25px;
 }
 .controller .button--remove-style-from-collection {
-    display: none;
-    color: #62b3e5;
+  display: none;
+  color: #62b3e5;
 }
 
 .controller:not(.single) .in-collection .icon--item-in-collection,
 .controller .in-collection .button--remove-style-from-collection {
-    display: unset;
+  display: unset;
 }

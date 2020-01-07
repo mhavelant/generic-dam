@@ -22,7 +22,6 @@ class MediaAssetFilterForm extends FormBase {
     'instagram' => 'Instagram',
     'linkedin' => 'LinkedIn',
     'ms' => 'Powerpoint',
-    'tieto' => 'Tieto.com',
   ];
 
   /**

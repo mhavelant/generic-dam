@@ -295,8 +295,7 @@ class AssetPreviewListMarkup {
       $identifier = strtolower($identifier);
 
       // @todo: This is a hack.
-      // @todo: Remove tieto.com.
-      if (\in_array($identifier, ['original-ratio', 'tieto.com', 'powerpoint'], TRUE)) {
+      if (\in_array($identifier, ['original-ratio', 'powerpoint'], TRUE)) {
         $identifier .= '-no-badge';
       }
 
@@ -492,7 +491,6 @@ class AssetPreviewListMarkup {
       'twitter_organic_tweet',
       'twitter_organic_tweet_no_badge',
       'ms_powerpoint_no_badge',
-      'tieto_com_no_badge',
     ];
 
     /** @var \Drupal\Core\Config\Entity\ConfigEntityStorage $styleStorage */
