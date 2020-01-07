@@ -1,0 +1,13 @@
+{
+    "name": "brainsum/generic_dam",
+    "type": "drupal-module",
+    "description": "Feature-set for turning a Drupal 8 site into a Digital Assets Management platform.",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "mhavelant",
+            "email": "mhavelant@brainsum.com"
+        }
+    ],
+    "require": {}
+}
