@@ -60,6 +60,9 @@ class AssetLocalActions extends DeriverBase {
    *
    * @return array
    *   The bundles keyed by bundle ID.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   protected function getMediaTypes() {
     $storage = Drupal::entityTypeManager()->getStorage('media_type');
