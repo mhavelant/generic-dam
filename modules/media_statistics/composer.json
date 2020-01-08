@@ -1,6 +1,6 @@
 {
-    "name": "brainsum/media_assets_api",
-    "description": "JSONAPI integration for media assets.",
+    "name": "brainsum/media_statistics",
+    "description": "Download statistics for media assets.",
     "type": "drupal-module",
     "license": "GPL-2.0-or-later",
     "authors": [
