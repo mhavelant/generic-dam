@@ -4,6 +4,7 @@ namespace Drupal\media_assets\Render;
 
 use Drupal;
 use Drupal\Core\Link;
+use Drupal\Core\Messenger\MessengerTrait;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
@@ -11,6 +12,20 @@ use Drupal\image\Plugin\Field\FieldType\ImageItem;
 use Drupal\media\MediaInterface;
 use Drupal\media_assets\Form\MediaAssetFilterForm;
 use InvalidArgumentException;
+use function array_shift;
+use function array_values;
+use function drupal_get_path;
+use function explode;
+use function file_create_url;
+use function file_exists;
+use function file_get_contents;
+use function getimagesize;
+use function in_array;
+use function is_array;
+use function render;
+use function str_replace;
+use function strpos;
+use function strtolower;
 
 /**
  * Class AssetPreviewListMarkup.
@@ -19,6 +34,7 @@ use InvalidArgumentException;
  */
 class AssetPreviewListMarkup {
 
+  use MessengerTrait;
   use StringTranslationTrait;
 
   /**
@@ -138,7 +154,7 @@ class AssetPreviewListMarkup {
     $file = $this->entityTypeManager->getStorage('file')->load($image->target_id);
 
     if (NULL === $file) {
-      drupal_set_message('The image "' . $image->getName() . '" is not found.', 'error');
+      $this->messenger->addMessage('The image "' . $image->getName() . '" is not found.', 'error');
       return [];
     }
 
@@ -151,7 +167,7 @@ class AssetPreviewListMarkup {
       );
     }
     catch (InvalidArgumentException $exception) {
-      drupal_set_message($exception->getMessage(), 'error');
+      $this->messenger->addMessage($exception->getMessage(), 'error');
       return [];
     }
 
@@ -295,7 +311,7 @@ class AssetPreviewListMarkup {
       $identifier = strtolower($identifier);
 
       // @todo: This is a hack.
-      if (\in_array($identifier, ['original-ratio', 'powerpoint'], TRUE)) {
+      if (in_array($identifier, ['original-ratio', 'powerpoint'], TRUE)) {
         $identifier .= '-no-badge';
       }
 
@@ -330,7 +346,7 @@ class AssetPreviewListMarkup {
           '#type' => 'html_tag',
           '#tag' => 'span',
           '#attributes' => [
-            'title' => t('Add to collection'),
+            'title' => $this->t('Add to collection'),
             'data-media-uuid' => $media->uuid(),
             'data-media-type' => $media->bundle(),
             'data-style-uuid' => $style->uuid(),
@@ -344,7 +360,7 @@ class AssetPreviewListMarkup {
           '1' => [
             '#type' => 'html_tag',
             '#tag' => 'span',
-            '#value' => t('Add to collection'),
+            '#value' => $this->t('Add to collection'),
             '#attributes' => [
               'class' => [
                 'add-to-collection-text',

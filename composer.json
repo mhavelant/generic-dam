@@ -13,12 +13,35 @@
         "drupal-8": {
             "type": "composer",
             "url": "https://packages.drupal.org/8"
+        },
+        "media_upload": {
+            "type": "vcs",
+            "url": "https://github.com/brainsum/media_upload.git"
+        },
+        "dropzone": {
+            "type": "package",
+            "package": {
+                "name": "enyo-drupal/dropzone",
+                "version": "v4.3.0",
+                "type": "drupal-library",
+                "dist": {
+                    "url": "https://github.com/enyo/dropzone/archive/v4.3.0.zip",
+                    "type": "zip"
+                }
+            }
         }
     },
     "require": {
+        "php": "^7.2",
+        "ext-json": "*",
+        "ext-zip": "*",
+        "brainsum/media_upload": "dev-8.x-2.x",
         "drupal/core": "^8.7",
+        "drupal/filehash": "^1.2",
         "drupal/focal_point": "^1.2",
-        "drupal/maillog": "1.x-dev"
+        "drupal/jsonapi_extras": "^3.13",
+        "drupal/maillog": "1.x-dev",
+        "enyo-drupal/dropzone": "^4.3"
     },
     "require-dev": {
         "drupal-composer/drupal-security-advisories": "8.x-dev",

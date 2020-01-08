@@ -5,7 +5,6 @@ namespace Drupal\media_assets\Plugin\Field\FieldType;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemBase;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
-use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Plugin implementation of the 'media_assets' field type.
@@ -38,13 +37,6 @@ class MediaAssets extends FieldItemBase {
    * {@inheritdoc}
    */
   public static function generateSampleValue(FieldDefinitionInterface $field_definition) {
-    return [];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function storageSettingsForm(array &$form, FormStateInterface $form_state, $has_data) {
     return [];
   }
 

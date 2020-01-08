@@ -2,11 +2,11 @@ name: 'Media collection'
 type: module
 description: 'Collection/Basket/Cart feature for media items.'
 core: 8.x
-package: 'Media'
+package: 'Digital Assets Management'
 dependencies:
   - drupal:system (>=8.4)
   - drupal:media
   - drupal:image
   - drupal:file
   - drupal:user
-  - media_assets:media_assets
+  - media_assets_download:media_assets_download

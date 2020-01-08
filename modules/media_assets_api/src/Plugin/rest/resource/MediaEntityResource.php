@@ -1,10 +1,10 @@
 <?php
 
-namespace Drupal\media_assets_library\Plugin\rest\resource;
+namespace Drupal\media_assets_api\Plugin\rest\resource;
 
-use Drupal;
 use Drupal\Component\Plugin\DependentPluginInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\rest\Plugin\ResourceBase;
 use Drupal\rest\ResourceResponse;
@@ -18,16 +18,18 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * Provides a resource for media entities.
  *
  * @RestResource(
- *   id = "tml_media_library",
- *   label = @Translation("TML Media entity"),
+ *   id = "media_library_entity",
+ *   label = @Translation("Media entity"),
  *   serialization_class = "Drupal\Core\Entity\Entity",
  *   uri_paths = {
  *     "canonical" = "/api/v1/media_library/{media_entity}",
  *     "https://www.drupal.org/link-relations/create" = "/api/v1/media_library"
  *   }
  * )
+ *
+ * @todo: Extend EntityResource from rest instead?
  */
-class TMLMediaEntityResource extends ResourceBase implements DependentPluginInterface {
+class MediaEntityResource extends ResourceBase implements DependentPluginInterface {
 
   /**
    * The entity type targeted by this resource.
@@ -42,6 +44,13 @@ class TMLMediaEntityResource extends ResourceBase implements DependentPluginInte
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
   protected $configFactory;
+
+  /**
+   * The media storage.
+   *
+   * @var \Drupal\media\MediaStorage
+   */
+  protected $mediaStorage;
 
   /**
    * Constructs a Drupal\rest\Plugin\rest\resource\EntityResource object.
@@ -60,11 +69,24 @@ class TMLMediaEntityResource extends ResourceBase implements DependentPluginInte
    *   A logger instance.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, array $serializer_formats, LoggerInterface $logger, ConfigFactoryInterface $config_factory) {
+  public function __construct(
+    array $configuration,
+    $plugin_id,
+    $plugin_definition,
+    EntityTypeManagerInterface $entity_type_manager,
+    array $serializer_formats,
+    LoggerInterface $logger,
+    ConfigFactoryInterface $config_factory
+  ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $serializer_formats, $logger);
+
     $this->entityType = $entity_type_manager->getDefinition('media');
     $this->configFactory = $config_factory;
+    $this->mediaStorage = $entity_type_manager->getStorage('media');
   }
 
   /**
@@ -113,31 +135,26 @@ class TMLMediaEntityResource extends ResourceBase implements DependentPluginInte
    */
   public function get($media_entity_id = NULL) {
     if (empty($media_entity_id)) {
-      throw new BadRequestHttpException(t('No Media entity ID was provided'));
+      throw new BadRequestHttpException($this->t('No Media entity ID was provided'));
     }
 
     // If the request is 'all', we return a list of links to the entities.
     if ($media_entity_id === 'list') {
       /** @var int[] $media_ids */
-      $media_ids = Drupal::entityQuery('media')
+      $media_ids = $this->mediaStorage->getQuery()
         ->condition('status', 1, '=')
         ->execute();
 
-      $media_entity_storage = Drupal::entityTypeManager()
-        ->getStorage('media');
-
       /** @var \Drupal\media\MediaInterface[] $media_data */
-      $media_entity = $media_entity_storage->loadMultiple($media_ids);
+      $media_entity = $this->mediaStorage->loadMultiple($media_ids);
     }
     else {
       // If the request is an id, we try to load it.
-      $media_entity_storage = Drupal::entityTypeManager()
-        ->getStorage('media');
       /** @var \Drupal\media\MediaInterface $media_data */
-      $media_entity = $media_entity_storage->load($media_entity_id);
+      $media_entity = $this->mediaStorage->load($media_entity_id);
 
       if (NULL === $media_entity) {
-        throw new NotFoundHttpException(t('Media entity with ID @id was not found', ['@id' => $media_entity_id]));
+        throw new NotFoundHttpException($this->t('Media entity with ID @id was not found', ['@id' => $media_entity_id]));
       }
 
       /** @var \Drupal\Core\Access\AccessResultReasonInterface $entity_access */
@@ -148,24 +165,49 @@ class TMLMediaEntityResource extends ResourceBase implements DependentPluginInte
 
       $type = $media_entity->bundle();
       if ('image' !== $type) {
-        throw new BadRequestHttpException(t('The type of the requested Media entity (@type) is not supported.', ['@type' => $type]));
+        throw new BadRequestHttpException($this->t('The type of the requested Media entity (@type) is not supported.', ['@type' => $type]));
       }
     }
 
     $response = new ResourceResponse($media_entity, 200);
     $response->addCacheableDependency($media_entity);
 
-
     return $response;
+  }
+
+  /**
+   * Generates a fallback access denied message, when no specific reason is set.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity object.
+   * @param string $operation
+   *   The disallowed entity operation.
+   *
+   * @return string
+   *   The proper message to display in the AccessDeniedHttpException.
+   *
+   * @todo: Remove if \Drupal\rest\Plugin\rest\resource\EntityResource gets used.
+   */
+  protected function generateFallbackAccessDeniedMessage(EntityInterface $entity, $operation) {
+    $message = "You are not authorized to {$operation} this {$entity->getEntityTypeId()} entity";
+
+    if ($entity->bundle() !== $entity->getEntityTypeId()) {
+      $message .= " of bundle {$entity->bundle()}";
+    }
+    return "{$message}.";
   }
 
   /**
    * {@inheritdoc}
    */
   public function calculateDependencies() {
+    $dependencies = [];
+
     if (isset($this->entityType)) {
-      return ['module' => [$this->entityType->getProvider()]];
+      $dependencies = ['module' => [$this->entityType->getProvider()]];
     }
+
+    return $dependencies;
   }
 
 }

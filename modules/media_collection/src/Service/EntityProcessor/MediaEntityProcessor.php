@@ -6,7 +6,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\image\ImageStyleInterface;
 use Drupal\media\MediaInterface;
-use Drupal\media_assets\Model\FileArchivingData;
+use Drupal\media_assets_download\Model\FileArchivingData;
 
 /**
  * Class MediaEntityProcessor.
@@ -64,7 +64,7 @@ class MediaEntityProcessor {
    * @param \Drupal\image\ImageStyleInterface|null $imageStyle
    *   (Optional) image styling.
    *
-   * @return \Drupal\media_assets\Model\FileArchivingData[]
+   * @return \Drupal\media_assets_download\Model\FileArchivingData[]
    *   Array of processed entity data.
    */
   public function processImageMediaEntity(MediaInterface $media, ImageStyleInterface $imageStyle): array {
@@ -132,7 +132,7 @@ class MediaEntityProcessor {
    * @param \Drupal\media\MediaInterface $media
    *   The media entity.
    *
-   * @return \Drupal\media_assets\Model\FileArchivingData[]
+   * @return \Drupal\media_assets_download\Model\FileArchivingData[]
    *   Array of processed entity data.
    */
   public function processMediaEntity(MediaInterface $media): array {

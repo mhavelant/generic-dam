@@ -1,16 +1,16 @@
 <?php
 
-namespace Drupal\media_assets\Service;
+namespace Drupal\media_assets_download\Service;
 
 use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\media_assets\Model\FileArchivingData;
+use Drupal\media_assets_download\Model\FileArchivingData;
 use RuntimeException;
 use ZipArchive;
 
 /**
  * Class AssetArchiver.
  *
- * @package Drupal\media_assets\Service
+ * @package Drupal\media_assets_download\Service
  */
 class AssetArchiver {
 
@@ -19,7 +19,7 @@ class AssetArchiver {
    *
    * @param string $location
    *   Location of the archive.
-   * @param \Drupal\media_assets\Model\FileArchivingData[] $fileData
+   * @param \Drupal\media_assets_download\Model\FileArchivingData[] $fileData
    *   Array of processed entity data.
    *
    * @return string|null
@@ -92,7 +92,7 @@ class AssetArchiver {
    *
    * @param \ZipArchive $archive
    *   The archive to populate.
-   * @param \Drupal\media_assets\Model\FileArchivingData $fileData
+   * @param \Drupal\media_assets_download\Model\FileArchivingData $fileData
    *   The data of the file to be added.
    *
    * @return \ZipArchive

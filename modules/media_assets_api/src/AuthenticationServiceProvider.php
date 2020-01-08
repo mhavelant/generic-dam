@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\media_assets_library;
+namespace Drupal\media_assets_api;
 
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\DependencyInjection\ServiceProviderBase;
@@ -8,7 +8,7 @@ use Drupal\Core\DependencyInjection\ServiceProviderBase;
 /**
  * Service alter.
  */
-class MediaAssetsLibraryServiceProvider extends ServiceProviderBase {
+class AuthenticationServiceProvider extends ServiceProviderBase {
 
   /**
    * {@inheritdoc}
@@ -16,7 +16,8 @@ class MediaAssetsLibraryServiceProvider extends ServiceProviderBase {
   public function alter(ContainerBuilder $container) {
     // Change basic auth class to our custom one.
     if ($container->hasDefinition('basic_auth.authentication.basic_auth')) {
-      $container->getDefinition('basic_auth.authentication.basic_auth')
+      $container
+        ->getDefinition('basic_auth.authentication.basic_auth')
         ->setClass(BasicAuthWithExclude::class);
     }
   }

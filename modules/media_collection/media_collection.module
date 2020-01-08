@@ -7,12 +7,13 @@
 
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
 use Drupal\media\MediaInterface;
 use Drupal\media_collection\Entity\MediaCollectionItemInterface;
-use Drupal\media_assets\Render\AssetPreviewListMarkup;
+use Drupal\media_collection\Temporary\ImageStyleLoader;
 use Drupal\user\UserInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -202,7 +203,7 @@ function media_collection_options_list_alter(array &$options, array $context) {
     && ($fieldDefinition = $context['fieldDefinition'])
     && $fieldDefinition->getName() === 'style'
   ) {
-    $allowed = (new AssetPreviewListMarkup())->getImageStyleList();
+    $allowed = ImageStyleLoader::loadImageStylesList(Drupal::entityTypeManager());
     $allowed['_none'] = '';
     $options = array_intersect_key($options, $allowed);
   }
@@ -391,10 +392,25 @@ function media_collection_preprocess_media_collection_item(array &$variables) {
 }
 
 /**
+ * Helper function to determine if the Entity is a media image asset.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   The entity object in question.
+ *
+ * @return bool
+ *   Whether it is a valid media image asset or not.
+ *
+ * @todo: Duplicate of _media_assets_is_media_image, refactor.
+ */
+function _media_collection_is_media_image(EntityInterface $entity) {
+  return ($entity->getEntityTypeId() === 'media' && $entity->bundle() === 'image');
+}
+
+/**
  * Implements hook_ENTITY_TYPE_view_alter().
  */
 function media_collection_media_view_alter(array &$build, MediaInterface $media, EntityViewDisplayInterface $display) {
-  if ($build['#view_mode'] === 'full' && !_media_assets_is_media_image($media)) {
+  if ($build['#view_mode'] === 'full' && !_media_collection_is_media_image($media)) {
 
     if (!isset($build['media_collection_data'])) {
       $build['media_collection_data'] = [];
@@ -483,5 +499,20 @@ function media_collection_preprocess_html(array &$variables) {
     }
 
     $variables['attributes']['class'][] = "media-type--{$media->bundle()}";
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function media_collection_preprocess_page_title(array &$variables) {
+  $routeMatch = Drupal::routeMatch();
+  if (in_array($routeMatch->getRouteName(), [
+    'entity.media.canonical',
+    'media_collection.collection.current_user',
+    'media_collection.collection.given_user',
+  ], TRUE)
+  ) {
+    $variables['title'] = '';
   }
 }

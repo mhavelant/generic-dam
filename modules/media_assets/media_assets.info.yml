@@ -2,9 +2,13 @@ name: "Media Assets"
 type: module
 description: Media assets functionality
 core: 8.x
-package: Custom
+package: 'Digital Assets Management'
 dependencies:
   - drupal:system (>=8.4)
   - drupal:media
   - drupal:taxonomy
+  - drupal:file
+  - drupal:image
   - focal_point:focal_point
+  - media_upload:media_upload
+  - media_assets_download:media_assets_download

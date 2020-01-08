@@ -11,7 +11,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\file\Entity\File;
+use Drupal\file\FileInterface;
 use Drupal\media\MediaInterface;
 use Drupal\media_assets\Render\AssetPreviewListMarkup;
 use Drupal\media_assets\Render\MediaDownloadButton;
@@ -80,7 +80,10 @@ function media_assets_media_update(EntityInterface $entity) {
     $field_name = _media_assets_get_entity_media_field_name($entity->bundle());
 
     $image = $entity->{$field_name}->first();
-    $file = File::load($image->target_id);
+    /** @var \Drupal\file\FileStorageInterface $fileStorage */
+    $fileStorage = Drupal::entityTypeManager()->getStorage('file');
+    /** @var \Drupal\file\FileInterface $file */
+    $file = $fileStorage->load($image->target_id);
 
     if ($file === NULL) {
       return;
@@ -107,7 +110,7 @@ function _media_assets_get_entity_media_field_name($type) {
 /**
  * Gets the URI of an image file.
  *
- * @param \Drupal\file\Entity\File $file
+ * @param \Drupal\file\FileInterface $file
  *   The image file.
  *
  * @throws InvalidArgumentException
@@ -115,7 +118,7 @@ function _media_assets_get_entity_media_field_name($type) {
  * @return null|string
  *   The image source.
  */
-function _media_assets_get_image_uri(File $file) {
+function _media_assets_get_image_uri(FileInterface $file) {
   /** @var \Drupal\Core\Image\Image $image_loaded */
   $image_loaded = Drupal::service('image.factory')->get($file->getFileUri());
   if (!$image_loaded->isValid()) {
@@ -128,7 +131,7 @@ function _media_assets_get_image_uri(File $file) {
 /**
  * Implements hook_form_FORM_ID_alter().
  */
-function media_assets_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+function media_assets_form_views_exposed_form_alter(array &$form, FormStateInterface $form_state, $form_id) {
   if ($form['#id'] === 'views-exposed-form-asset-search-asset-search') {
     hide($form['type']);
     $current_user = Drupal::currentUser()->id();
@@ -269,11 +272,11 @@ function media_assets_preprocess_html(&$variables) {
 /**
  * Implements hook_ENTITY_TYPE_presave().
  */
-function media_assets_media_presave(EntityInterface $entity) {
-  /** @var \Drupal\media\MediaInterface $entity */
+function media_assets_media_presave(MediaInterface $entity) {
   /** @var \Drupal\Core\Session\AccountProxyInterface $currentUser */
   $currentUser = Drupal::currentUser();
   $owner = ($entity->getOwner()->id() === $currentUser->id()) ? 'own' : 'any';
+
   if (!$currentUser->hasPermission("publish $owner media")) {
     $entity->setPublished(FALSE);
   }
@@ -282,7 +285,7 @@ function media_assets_media_presave(EntityInterface $entity) {
 /**
  * Implements hook_form_FORM_ID_alter().
  */
-function media_assets_form_media_type_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+function media_assets_form_media_type_edit_form_alter(array &$form, FormStateInterface $form_state, $form_id) {
   /** @var \Drupal\Core\Entity\EntityFormInterface $formObject */
   $formObject = $form_state->getFormObject();
   /** @var \Drupal\media\MediaTypeInterface $mediaType */
@@ -306,7 +309,7 @@ function media_assets_form_media_type_edit_form_alter(&$form, FormStateInterface
  *
  * @see media_assets_form_media_bundle_edit_form_alter()
  */
-function media_assets_form_media_type_edit_form_submit($form, FormStateInterface $form_state) {
+function media_assets_form_media_type_edit_form_submit(array $form, FormStateInterface $form_state) {
   $form_state->setValue('description', $form['description']['value']['#value']);
 }
 
@@ -326,7 +329,7 @@ function media_assets_views_pre_view(ViewExecutable $view, $display_id, array &$
 /**
  * Implements hook_menu_local_actions_alter().
  */
-function media_assets_menu_local_actions_alter(&$local_actions) {
+function media_assets_menu_local_actions_alter(array &$local_actions) {
   if (isset($local_actions['media_upload.bulk_media_upload_list'])) {
     $local_actions['media_upload.bulk_media_upload_list']['title'] = t('Upload content in bulk');
   }

@@ -17,6 +17,7 @@ class MediaUploadRouteSubscriber extends RouteSubscriberBase {
    * {@inheritdoc}
    */
   protected function alterRoutes(RouteCollection $collection) {
+    // @todo: This requires the media_upload module.
     if ($route = $collection->get('media_upload.bulk_media_upload')) {
       $route->setDefault('_form', BulkMediaUploadForm::class);
     }

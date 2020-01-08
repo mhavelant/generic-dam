@@ -1,10 +1,10 @@
 <?php
 
-namespace Drupal\media_assets_library\Plugin\views\style;
+namespace Drupal\media_assets_api\Plugin\views\style;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\media_assets_api\Temporary\ImageStyleLoader;
 use Drupal\rest\Plugin\views\style\Serializer;
-use Drupal\media_assets\Render\AssetPreviewListMarkup;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use function reset;
@@ -15,13 +15,12 @@ use function reset;
  * @ingroup views_style_plugins
  *
  * @ViewsStyle(
- *   id = "serializer_tml",
- *   title = @Translation("Serializer with TML data"),
- *   help = @Translation("Serializes views row data using the Serializer
- *   component and adds custom data."), display_types = {"data"}
+ *   id = "media_assets_serializer",
+ *   title = @Translation("Serializer for assets data"),
+ *   help = @Translation("Serializes views row data using the Serializer component and adds custom data."), display_types = {"data"}
  * )
  */
-class SerializerTML extends Serializer {
+class MediaAssetsSerializer extends Serializer {
 
   /**
    * Taxonomy term storage.
@@ -69,7 +68,8 @@ class SerializerTML extends Serializer {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $serializer, $serializer_formats, $serializer_format_providers);
 
     $this->termStorage = $entityTypeManager->getStorage('taxonomy_term');
-    $this->imageStyleList = (new AssetPreviewListMarkup())->getImageStyleList();
+    // @todo: FIXME.
+    $this->imageStyleList = ImageStyleLoader::loadImageStylesList($entityTypeManager);
   }
 
   /**
@@ -114,13 +114,14 @@ class SerializerTML extends Serializer {
     else {
       $content_type = !empty($this->options['formats']) ? reset($this->options['formats']) : 'json';
     }
-    return $this->serializer->serialize([
-      'results' => $rows,
-      'media_assets' => $media_assets,
-      'categories' => $categories,
-      'current_page' => $current_page,
-      'total_items' => $total_items,
-    ],
+    return $this->serializer->serialize(
+      [
+        'results' => $rows,
+        'media_assets' => $media_assets,
+        'categories' => $categories,
+        'current_page' => $current_page,
+        'total_items' => $total_items,
+      ],
       $content_type,
       ['views_style_plugin' => $this]
     );

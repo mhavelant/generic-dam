@@ -3,14 +3,18 @@
 namespace Drupal\media_assets\Form;
 
 use Drupal\Component\Render\PlainTextOutput;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+use Drupal\Core\Utility\Token;
 use Drupal\media\MediaTypeInterface;
 use Drupal\media_upload\Form\BulkMediaUploadForm as ContribForm;
 use Exception;
-use function drupal_set_message;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use function explode;
 use function file_get_contents;
-use function file_prepare_directory;
 use function file_save_data;
 use function in_array;
 use function preg_match;
@@ -24,6 +28,44 @@ use function trim;
  * @see \Drupal\media_upload\Form\BulkMediaUploadForm
  */
 class BulkMediaUploadForm extends ContribForm {
+
+  /**
+   * The file system.
+   *
+   * @var \Drupal\Core\File\FileSystemInterface
+   */
+  protected $fileSystem;
+
+  /**
+   * {@inheritdoc}
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('entity_type.manager'),
+      $container->get('entity_field.manager'),
+      $container->get('logger.factory'),
+      $container->get('token'),
+      $container->get('file_system')
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(
+    EntityTypeManagerInterface $entityTypeManager,
+    EntityFieldManagerInterface $entityFieldManager,
+    LoggerChannelFactoryInterface $logger,
+    Token $token,
+    FileSystemInterface $fileSystem
+  ) {
+    parent::__construct($entityTypeManager, $entityFieldManager, $logger, $token);
+
+    $this->fileSystem = $fileSystem;
+  }
 
   /**
    * {@inheritdoc}
@@ -105,7 +147,7 @@ class BulkMediaUploadForm extends ContribForm {
 
       if (empty($values['dropzonejs']) || empty($values['dropzonejs']['uploaded_files'])) {
         $this->logger->warning('No documents were uploaded');
-        drupal_set_message($this->t('No documents were uploaded'), 'warning');
+        $this->messenger()->addMessage($this->t('No documents were uploaded'), 'warning');
         return;
       }
 
@@ -120,29 +162,30 @@ class BulkMediaUploadForm extends ContribForm {
       $fileDirectory = trim($targetFieldSettings['file_directory'], '/');
       // Replace tokens. As the tokens might contain HTML we convert
       // it to plain text.
-      $fileDirectory = PlainTextOutput::renderFromHtml($this->token
-        ->replace($fileDirectory));
+      $fileDirectory = PlainTextOutput::renderFromHtml(
+        $this->token->replace($fileDirectory)
+      );
       $targetDirectory = $targetFieldSettings['uri_scheme'] . '://' . $fileDirectory;
-      file_prepare_directory($targetDirectory, FILE_CREATE_DIRECTORY);
+      $this->fileSystem->prepareDirectory($targetDirectory, FileSystemInterface::CREATE_DIRECTORY);
 
       /** @var array $file */
       foreach ($files as $file) {
         $fileInfo = [];
-        if (preg_match(self::FILENAME_REGEX, $file['filename'], $fileInfo) !== 1) {
+        if (preg_match(static::FILENAME_REGEX, $file['filename'], $fileInfo) !== 1) {
           $errorFlag = TRUE;
           $this->logger->warning('@filename - Incorrect file name', ['@filename' => $file['filename']]);
-          drupal_set_message($this->t('@filename - Incorrect file name', ['@filename' => $file['filename']]), 'warning');
+          $this->messenger()->addMessage($this->t('@filename - Incorrect file name', ['@filename' => $file['filename']]), 'warning');
           continue;
         }
 
         if (!in_array(
-          $fileInfo[self::EXT_NAME],
+          $fileInfo[static::EXT_NAME],
           explode(' ', $targetFieldSettings['file_extensions']),
           FALSE
         )) {
           $errorFlag = TRUE;
           $this->logger->error('@filename - File extension is not allowed', ['@filename' => $file['filename']]);
-          drupal_set_message($this->t('@filename - File extension is not allowed', ['@filename' => $file['filename']]), 'error');
+          $this->messenger()->addMessage($this->t('@filename - File extension is not allowed', ['@filename' => $file['filename']]), 'error');
           continue;
         }
 
@@ -155,7 +198,7 @@ class BulkMediaUploadForm extends ContribForm {
           $this->logger->warning('@filename - File could not be saved.', [
             '@filename' => $file['filename'],
           ]);
-          drupal_set_message('@filename - File could not be saved.', [
+          $this->messenger()->addMessage('@filename - File could not be saved.', [
             '@filename' => $file['filename'],
           ], 'warning');
           continue;
@@ -178,25 +221,25 @@ class BulkMediaUploadForm extends ContribForm {
       $form_state->set('created_media', $createdMedia);
       if ($errorFlag && !$fileCount) {
         $this->logger->warning('No documents were uploaded');
-        drupal_set_message($this->t('No documents were uploaded'), 'warning');
+        $this->messenger()->addMessage($this->t('No documents were uploaded'), 'warning');
         return;
       }
 
       if ($errorFlag) {
         $this->logger->info('Some documents have not been uploaded');
-        drupal_set_message($this->t('Some documents have not been uploaded'), 'warning');
+        $this->messenger()->addMessage($this->t('Some documents have not been uploaded'), 'warning');
         $this->logger->info('@fileCount documents have been uploaded', ['@fileCount' => $fileCount]);
-        drupal_set_message($this->t('@fileCount documents have been uploaded', ['@fileCount' => $fileCount]));
+        $this->messenger()->addMessage($this->t('@fileCount documents have been uploaded', ['@fileCount' => $fileCount]));
         return;
       }
 
       $this->logger->info('@fileCount documents have been uploaded', ['@fileCount' => $fileCount]);
-      drupal_set_message($this->t('@fileCount documents have been uploaded', ['@fileCount' => $fileCount]));
+      $this->messenger()->addMessage($this->t('@fileCount documents have been uploaded', ['@fileCount' => $fileCount]));
       return;
     }
     catch (Exception $e) {
       $this->logger->critical($e->getMessage());
-      drupal_set_message($e->getMessage(), 'error');
+      $this->messenger()->addMessage($e->getMessage(), 'error');
 
       return;
     }

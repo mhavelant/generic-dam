@@ -1,11 +1,11 @@
 <?php
 
-namespace Drupal\media_assets\Model;
+namespace Drupal\media_assets_download\Model;
 
 /**
  * Class FileArchivingData.
  *
- * @package Drupal\media_assets\Model
+ * @package Drupal\media_assets_download\Model
  */
 class FileArchivingData {
 

@@ -1,12 +1,12 @@
 <?php
 
-namespace Drupal\media_assets_library\Normalizer;
+namespace Drupal\media_assets_api\Normalizer;
 
-use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\media\MediaInterface;
+use Drupal\media_assets_api\Temporary\ImageStyleLoader;
 use Drupal\serialization\Normalizer\ContentEntityNormalizer;
-use Drupal\media_assets\Render\AssetPreviewListMarkup;
 use function count;
 use function in_array;
 
@@ -46,24 +46,21 @@ class MediaEntityNormalizer extends ContentEntityNormalizer {
   /**
    * MediaEntityNormalizer constructor.
    *
-   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
-   *   Entity manager.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+   *   Entity type manager.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  public function __construct(EntityManagerInterface $entity_manager) {
-    parent::__construct($entity_manager);
-
-    // @todo Use $this->entityTypeManager only with Drupal 8.7.
-    $entityTypeManager = $this->entityTypeManager ?? $this->entityManager;
+  public function __construct(EntityTypeManagerInterface $entityTypeManager) {
+    parent::__construct($entityTypeManager);
 
     $this->fileStorage = $entityTypeManager->getStorage('file');
     $this->imageStyleStorage = $entityTypeManager->getStorage('image_style');
     $this->termStorage = $entityTypeManager->getStorage('taxonomy_term');
 
     $this->supportedInterfaceOrClass = MediaInterface::class;
-    $this->imageStyleList = (new AssetPreviewListMarkup())->getImageStyleList();
+    $this->imageStyleList = ImageStyleLoader::loadImageStylesList($entityTypeManager);
   }
 
   /**

@@ -8,8 +8,8 @@ use Drupal\Core\File\FileSystemInterface;
 use Drupal\file\FileInterface;
 use Drupal\media_collection\Entity\MediaCollectionItemInterface;
 use Drupal\media_collection\Service\EntityProcessor\CollectionItemProcessor;
-use Drupal\media_assets\Service\FileManager;
-use Drupal\media_assets\Service\AssetArchiver;
+use Drupal\media_assets_download\Service\FileManager;
+use Drupal\media_assets_download\Service\AssetArchiver;
 use SplFileInfo;
 use function count;
 use function reset;
@@ -38,7 +38,7 @@ final class ItemFileHandler {
   /**
    * Archive manager.
    *
-   * @var \Drupal\media_assets\Service\AssetArchiver
+   * @var \Drupal\media_assets_download\Service\AssetArchiver
    */
   private $archiver;
 
@@ -59,7 +59,7 @@ final class ItemFileHandler {
   /**
    * File manager service.
    *
-   * @var \Drupal\media_assets\Service\FileManager
+   * @var \Drupal\media_assets_download\Service\FileManager
    */
   private $fileManager;
 
@@ -70,13 +70,13 @@ final class ItemFileHandler {
    *   The file system service.
    * @param \Drupal\media_collection\Service\EntityProcessor\CollectionItemProcessor $itemProcessor
    *   Processor for collection items.
-   * @param \Drupal\media_assets\Service\AssetArchiver $archiver
+   * @param \Drupal\media_assets_download\Service\AssetArchiver $archiver
    *   Archive manager.
    * @param \Drupal\Component\Datetime\TimeInterface $time
    *   Time service.
    * @param \Drupal\Core\Datetime\DateFormatterInterface $dateFormatter
    *   Date formatter.
-   * @param \Drupal\media_assets\Service\FileManager $fileManager
+   * @param \Drupal\media_assets_download\Service\FileManager $fileManager
    *   File manager service.
    */
   public function __construct(

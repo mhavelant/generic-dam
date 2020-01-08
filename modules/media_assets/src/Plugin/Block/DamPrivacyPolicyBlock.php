@@ -42,6 +42,7 @@ class DamPrivacyPolicyBlock extends BlockBase {
    * {@inheritdoc}
    */
   protected function blockAccess(AccountInterface $account) {
+    // @todo: drupal/userprotect adds this permission.
     // Protect block access with permission check.
     if ($account->hasPermission('userprotect.account.edit')) {
       return AccessResult::allowed();

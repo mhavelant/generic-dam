@@ -6,7 +6,7 @@ use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\media_collection\Entity\MediaCollectionInterface;
 use Drupal\media_collection\Service\FileHandler\CollectionFileHandler;
-use Drupal\media_assets\Service\FileResponseBuilder;
+use Drupal\media_assets_download\Service\FileResponseBuilder;
 use Drupal\user\UserInterface;
 use Symfony\Component\HttpFoundation\Response;
 use function file_exists;
@@ -47,7 +47,7 @@ final class DownloadHandler {
   /**
    * The file response builder.
    *
-   * @var \Drupal\media_assets\Service\FileResponseBuilder
+   * @var \Drupal\media_assets_download\Service\FileResponseBuilder
    */
   private $fileResponseBuilder;
 
@@ -62,7 +62,7 @@ final class DownloadHandler {
    *   The current user.
    * @param \Drupal\media_collection\Service\FileHandler\CollectionFileHandler $collectionFileHandler
    *   Download handler for collections.
-   * @param \Drupal\media_assets\Service\FileResponseBuilder $fileResponseBuilder
+   * @param \Drupal\media_assets_download\Service\FileResponseBuilder $fileResponseBuilder
    *   The file response builder.
    */
   public function __construct(

@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\media_assets\Service;
+namespace Drupal\media_assets_download\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\StreamWrapper\LocalStream;
@@ -9,14 +9,13 @@ use Drupal\file\FileInterface;
 use Drupal\user\UserInterface;
 use SplFileInfo;
 use function array_keys;
-use function file_stream_wrapper_uri_normalize;
 use function str_replace;
 use function strpos;
 
 /**
  * Class FileManager.
  *
- * @package Drupal\media_assets\Service
+ * @package Drupal\media_assets_download\Service
  */
 final class FileManager {
 
@@ -99,7 +98,7 @@ final class FileManager {
         strpos($pathName, $stream->realpath()) === 0
         || strpos($pathName, $stream->getDirectoryPath()) === 0
       ) {
-        return file_stream_wrapper_uri_normalize(str_replace([
+        return $this->streamWrapperManager->normalizeUri(str_replace([
           $stream->realpath(),
           $stream->getDirectoryPath(),
         ], $stream->getUri(), $pathName));

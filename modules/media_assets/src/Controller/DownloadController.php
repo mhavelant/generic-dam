@@ -4,8 +4,8 @@ namespace Drupal\media_assets\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\media\MediaInterface;
-use Drupal\media_assets\Service\AssetDownloadHandler;
-use Drupal\media_assets\Service\FileResponseBuilder;
+use Drupal\media_assets_download\Service\AssetDownloadHandler;
+use Drupal\media_assets_download\Service\FileResponseBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -26,17 +26,17 @@ class DownloadController extends ControllerBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('media_assets.asset_download_handler'),
-      $container->get('media_assets.file_response_builder')
+      $container->get('media_assets_download.asset_download_handler'),
+      $container->get('media_assets_download.file_response_builder')
     );
   }
 
   /**
    * DownloadController constructor.
    *
-   * @param \Drupal\media_assets\Service\AssetDownloadHandler $downloadHandler
+   * @param \Drupal\media_assets_download\Service\AssetDownloadHandler $downloadHandler
    *   Download handler.
-   * @param \Drupal\media_assets\Service\FileResponseBuilder $fileResponseBuilder
+   * @param \Drupal\media_assets_download\Service\FileResponseBuilder $fileResponseBuilder
    *   The file response builder.
    */
   public function __construct(

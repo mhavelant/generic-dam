@@ -36,7 +36,7 @@ class CollectionItemProcessor {
    * @param \Drupal\media_collection\Entity\MediaCollectionItemInterface $item
    *   The collection item.
    *
-   * @return \Drupal\media_assets\Model\FileArchivingData[]
+   * @return \Drupal\media_assets_download\Model\FileArchivingData[]
    *   Array of processed entity data.
    */
   public function process(MediaCollectionItemInterface $item): array {

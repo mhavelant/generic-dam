@@ -1,0 +1,29 @@
+services:
+  media_assets_download.file_response_builder:
+    class: Drupal\media_assets_download\Service\FileResponseBuilder
+    arguments:
+      - '@transliteration'
+
+  media_assets_download.asset_file_handler:
+    class: Drupal\media_assets_download\Service\AssetFileHandler
+    arguments:
+      - '@file_system'
+
+  media_assets_download.asset_archiver:
+    class:  Drupal\media_assets_download\Service\AssetArchiver
+
+  media_assets_download.file_manager:
+    class: Drupal\media_assets_download\Service\FileManager
+    arguments:
+      - '@entity_type.manager'
+      - '@stream_wrapper_manager'
+
+  media_assets_download.asset_download_handler:
+    class:  Drupal\media_assets_download\Service\AssetDownloadHandler
+    arguments:
+      - '@media_assets_download.asset_file_handler'
+      - '@media_assets_download.asset_archiver'
+      - '@media_assets_download.file_manager'
+      - '@file_system'
+      - '@datetime.time'
+      - '@date.formatter'

@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\media_assets_library;
+namespace Drupal\media_assets_api;
 
 use Drupal;
 use Drupal\basic_auth\Authentication\Provider\BasicAuth;
@@ -15,15 +15,13 @@ class BasicAuthWithExclude extends BasicAuth {
    * {@inheritdoc}
    */
   public function applies(Request $request) {
+    $routeMatch = Drupal::routeMatch();
     // Enable Basic Auth only on the jsonapi routes.
-    if (Drupal::routeMatch()->getRouteObject() && !Drupal::routeMatch()->getRouteObject()->getOption('_is_jsonapi')) {
-      $applies = FALSE;
-    }
-    else {
-      $applies = parent::applies($request);
+    if ($routeMatch->getRouteObject() && !$routeMatch->getRouteObject()->getOption('_is_jsonapi')) {
+      return FALSE;
     }
 
-    return $applies;
+    return parent::applies($request);
   }
 
   /**
@@ -33,17 +31,18 @@ class BasicAuthWithExclude extends BasicAuth {
     // Run authenticate only for non LDAP users.
     if (Drupal::moduleHandler()->moduleExists('ldap_user')) {
       $username = $request->headers->get('PHP_AUTH_USER');
-      $accounts = $this->entityManager->getStorage('user')->loadByProperties(['name' => $username, 'status' => 1]);
+      /** @var \Drupal\user\UserInterface[] $accounts */
+      $accounts = $this->entityTypeManager->getStorage('user')->loadByProperties(['name' => $username, 'status' => 1]);
       $account = reset($accounts);
-      if ($account && !$account->get('ldap_user_puid')->value) {
+
+      if ($account && $account->hasField('ldap_user_puid') && !$account->get('ldap_user_puid')->value) {
         return parent::authenticate($request);
       }
-    }
-    else {
-      return parent::authenticate($request);
+
+      return NULL;
     }
 
-    return [];
+    return parent::authenticate($request);
   }
 
 }

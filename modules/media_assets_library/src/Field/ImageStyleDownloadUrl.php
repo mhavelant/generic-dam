@@ -2,9 +2,13 @@
 
 namespace Drupal\media_assets_library\Field;
 
+use Drupal;
 use Drupal\Core\Field\FieldItemList;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\image\Entity\ImageStyle;
+use Drupal\Core\TypedData\DataDefinitionInterface;
+use Drupal\Core\TypedData\TypedDataInterface;
+use RuntimeException;
+use function file_url_transform_relative;
 use function strpos;
 
 /**
@@ -14,7 +18,33 @@ use function strpos;
  */
 class ImageStyleDownloadUrl extends FieldItemList {
 
+  /**
+   * Image style name.
+   *
+   * @todo: Configurable.
+   */
   public const IMAGE_STYLE = 'medium';
+
+  /**
+   * Image style storage.
+   *
+   * @var \Drupal\image\ImageStyleStorageInterface
+   */
+  protected $imageStyleStorage;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(
+    DataDefinitionInterface $definition,
+    $name = NULL,
+    TypedDataInterface $parent = NULL
+  ) {
+    parent::__construct($definition, $name, $parent);
+
+    // @todo: Dep.inj.
+    $this->imageStyleStorage = Drupal::entityTypeManager()->getStorage('image_style');
+  }
 
   /**
    * Creates a relative thumbnail image style URL from file's URI.
@@ -26,8 +56,12 @@ class ImageStyleDownloadUrl extends FieldItemList {
    *   The transformed relative URL.
    */
   protected function fileCreateThumbnailUrl($uri): string {
-    /** @var \Drupal\image\ImageStyleInterface $style */
-    $style = ImageStyle::load(self::IMAGE_STYLE);
+    $style = $this->imageStyleStorage->load(self::IMAGE_STYLE);
+
+    if ($style === NULL) {
+      throw new RuntimeException('The "' . self::IMAGE_STYLE . '" image style cannot be loaded.');
+    }
+
     $url = $style->buildUrl($uri);
     return file_url_transform_relative(file_create_url($url));
   }

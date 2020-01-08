@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\media_assets_library\Routing;
+namespace Drupal\media_assets_api\Routing;
 
 use Drupal\Core\Routing\RouteSubscriberBase;
 use Symfony\Component\Routing\RouteCollection;
@@ -14,6 +14,7 @@ class RouteSubscriber extends RouteSubscriberBase {
    * {@inheritdoc}
    */
   protected function alterRoutes(RouteCollection $collection) {
+    // @todo: Add 'access tml jsonapi resources' permission.
     // Add custom permission to json api routes.
     foreach ($collection->all() as $name => $route) {
       if ($route->getOption('_is_jsonapi')) {

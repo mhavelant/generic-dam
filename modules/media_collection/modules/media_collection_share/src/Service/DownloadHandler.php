@@ -5,7 +5,7 @@ namespace Drupal\media_collection_share\Service;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\media_collection\Service\FileHandler\ItemFileHandler;
-use Drupal\media_assets\Service\FileResponseBuilder;
+use Drupal\media_assets_download\Service\FileResponseBuilder;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -48,7 +48,7 @@ final class DownloadHandler {
   /**
    * The file response builder.
    *
-   * @var \Drupal\media_assets\Service\FileResponseBuilder
+   * @var \Drupal\media_assets_download\Service\FileResponseBuilder
    */
   private $fileResponseBuilder;
 
@@ -61,7 +61,7 @@ final class DownloadHandler {
    *   The file system.
    * @param \Drupal\media_collection\Service\FileHandler\ItemFileHandler $fileHandler
    *   File handler for items.
-   * @param \Drupal\media_assets\Service\FileResponseBuilder $fileResponseBuilder
+   * @param \Drupal\media_assets_download\Service\FileResponseBuilder $fileResponseBuilder
    *   The file response builder.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException

@@ -1,15 +1,15 @@
 <?php
 
-namespace Drupal\media_assets\Service;
+namespace Drupal\media_assets_download\Service;
 
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\media\MediaInterface;
-use Drupal\media_assets\Model\FileArchivingData;
+use Drupal\media_assets_download\Model\FileArchivingData;
 
 /**
  * Class AssetFileHandler.
  *
- * @package Drupal\media_assets\Service
+ * @package Drupal\media_assets_download\Service
  */
 class AssetFileHandler {
 
@@ -79,7 +79,7 @@ class AssetFileHandler {
    * @param \Drupal\media\MediaInterface $media
    *   The media entity.
    *
-   * @return \Drupal\media_assets\Model\FileArchivingData[]
+   * @return \Drupal\media_assets_download\Model\FileArchivingData[]
    *   Files data array.
    */
   public function mediaFilesData(MediaInterface $media): array {

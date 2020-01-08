@@ -2,11 +2,12 @@
 
 namespace Drupal\media_collection\Plugin\Validation\Constraint;
 
-use function array_keys;
-use Drupal\media_assets\Render\AssetPreviewListMarkup;
-use function in_array;
+use Drupal;
+use Drupal\media_collection\Temporary\ImageStyleLoader;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
+use function array_keys;
+use function in_array;
 
 /**
  * Validates the ItemStyleConstraint constraint.
@@ -23,7 +24,8 @@ class ItemStyleConstraintValidator extends ConstraintValidator {
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   private function allowedStyles(): array {
-    return array_keys((new AssetPreviewListMarkup())->getImageStyleList());
+    // @todo: Dep. inj.
+    return array_keys(ImageStyleLoader::loadImageStylesList(Drupal::entityTypeManager()));
   }
 
   /**

@@ -42,14 +42,6 @@ class MediaAssetsFormatter extends FormatterBase {
   /**
    * {@inheritdoc}
    */
-  public function settingsSummary() {
-    // Implement settings summary.
-    return [];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $elements = [];
 

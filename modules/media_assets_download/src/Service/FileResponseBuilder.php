@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\media_assets\Service;
+namespace Drupal\media_assets_download\Service;
 
 use Drupal\Component\Transliteration\TransliterationInterface;
 use Drupal\file\FileInterface;
@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Class FileResponseBuilder.
  *
- * @package Drupal\media_assets\Response
+ * @package Drupal\media_assets_download\Response
  */
 class FileResponseBuilder {
 

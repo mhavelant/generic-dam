@@ -20,20 +20,20 @@ services:
     arguments:
       - '@file_system'
       - '@media_collection.entity_processor.media_collection_item'
-      - '@media_assets.asset_archiver'
+      - '@media_assets_download.asset_archiver'
       - '@datetime.time'
       - '@date.formatter'
-      - '@media_assets.file_manager'
+      - '@media_assets_download.file_manager'
 
   media_collection.file_handler.media_collection:
     class: Drupal\media_collection\Service\FileHandler\CollectionFileHandler
     arguments:
       - '@file_system'
       - '@media_collection.entity_processor.media_collection'
-      - '@media_assets.asset_archiver'
+      - '@media_assets_download.asset_archiver'
       - '@datetime.time'
       - '@date.formatter'
-      - '@media_assets.file_manager'
+      - '@media_assets_download.file_manager'
 
   media_collection.collection_handler:
     class: Drupal\media_collection\Service\CollectionHandler
@@ -49,7 +49,7 @@ services:
       - '@media_collection.collection_handler'
       - '@current_user'
       - '@media_collection.file_handler.media_collection'
-      - '@media_assets.file_response_builder'
+      - '@media_assets_download.file_response_builder'
 
   media_collection.generator.header_markup:
     class: Drupal\media_collection\Service\HeaderMarkupGenerator

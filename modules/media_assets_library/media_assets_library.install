@@ -7,6 +7,7 @@
 
 use Drupal\Core\Config\FileStorage;
 use Drupal\Core\Queue\SuspendQueueException;
+use Drupal\Core\Site\Settings;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 
@@ -67,13 +68,17 @@ function media_assets_library_update_8002() {
   $field_names = ['field_logo_description', 'field_template_description'];
   $entity_type = 'media';
   $database = Drupal::database();
+  /** @var \Drupal\field\FieldStorageConfigStorage $fieldStorageConfigStorage */
+  $fieldStorageConfigStorage = Drupal::entityTypeManager()->getStorage('field_storage_config');
+  /** @var \Drupal\field\FieldConfigStorage $fieldConfigStorage */
+  $fieldConfigStorage = Drupal::entityTypeManager()->getStorage('field_config');
 
   foreach ($field_names as $field_name) {
     $table = $entity_type . '__' . $field_name;
     $revision_table = $entity_type . '_revision__' . $field_name;
 
     // Step 1: Get field storage.
-    $field_storage = FieldStorageConfig::loadByName($entity_type, $field_name);
+    $field_storage = $fieldStorageConfigStorage->load($entity_type . '.' . $field_name);
 
     // Check if field not found.
     if (NULL === $field_storage) {
@@ -99,7 +104,7 @@ function media_assets_library_update_8002() {
     $new_fields = [];
     // Use existing field config for new field.
     foreach ($field_storage->getBundles() as $bundle => $label) {
-      $field = FieldConfig::loadByName($entity_type, $bundle, $field_name);
+      $field = $fieldConfigStorage->load($entity_type . '.' . $bundle . '.' . $field_name);
       $new_field = $field->toArray();
       $new_field['field_type'] = 'text_long';
       $new_field['settings'] = [];
@@ -124,12 +129,12 @@ function media_assets_library_update_8002() {
     field_purge_batch(250);
 
     // Step 6: Create new fieldstorage.
-    $new_field_storage = FieldStorageConfig::create($new_field_storage);
+    $new_field_storage = $fieldStorageConfigStorage->create($new_field_storage);
     $new_field_storage->save();
 
     // Step 7: Create new fields for all bundles.
     foreach ($new_fields as $new_field) {
-      $new_field = FieldConfig::create($new_field);
+      $new_field = $fieldConfigStorage->create($new_field);
       $new_field->save();
     }
 
@@ -163,7 +168,7 @@ function media_assets_library_update_8003() {
 
   $enabled = Drupal::service('module_installer')->install(['filehash'], TRUE);
   if ($enabled) {
-    $config_path = config_get_config_directory(CONFIG_SYNC_DIRECTORY);
+    $config_path = Settings::get('config_sync_directory');
     $source = new FileStorage($config_path);
     $config_storage = Drupal::service('config.storage');
     $config_storage->write('filehash.settings', $source->read('filehash.settings'));
@@ -189,7 +194,7 @@ function media_assets_library_update_8004() {
 
   Drupal::service('module_installer')->install(['dbee']);
 
-  $projectConfigPath = config_get_config_directory(CONFIG_SYNC_DIRECTORY);
+  $projectConfigPath = Settings::get('config_sync_directory');
   $source = new FileStorage($projectConfigPath);
   $configStorage = Drupal::service('config.storage');
 
@@ -201,6 +206,8 @@ function media_assets_library_update_8004() {
   foreach ($configs as $config) {
     $configStorage->write($config, $source->read($config));
   }
+
+  // @todo: How to handle this? Require dbee?
   module_load_include('inc', 'dbee', 'dbee.users');
   dbee_update_crypt_all('encrypt');
 }
@@ -222,7 +229,7 @@ function media_assets_library_update_8005() {
  * Import field encryption configuration from sync directory.
  */
 function _media_assets_library_import_field_encryption_config() {
-  $projectConfigPath = config_get_config_directory(CONFIG_SYNC_DIRECTORY);
+  $projectConfigPath = Settings::get('config_sync_directory');
   $source = new FileStorage($projectConfigPath);
   $configStorage = Drupal::service('config.storage');
 
@@ -241,7 +248,7 @@ function _media_assets_library_import_field_encryption_config() {
  * Import field encryption configuration for fields and run encryption.
  */
 function _media_assets_library_field_encryption() {
-  $projectConfigPath = config_get_config_directory(CONFIG_SYNC_DIRECTORY);
+  $projectConfigPath = Settings::get('config_sync_directory');
   $source = new FileStorage($projectConfigPath);
   $config_factory = Drupal::configFactory();
   $queue_factory = Drupal::service('queue');
@@ -252,6 +259,8 @@ function _media_assets_library_field_encryption() {
   ];
 
   $i = 0;
+  $messenger = Drupal::messenger();
+
   foreach ($field_configs as $field_config) {
     $field_settings = $source->read($field_config);
     $field_storage_config = $config_factory->getEditable($field_config);
@@ -266,7 +275,7 @@ function _media_assets_library_field_encryption() {
     while ($item = $queue->claimItem()) {
       $i++;
       try {
-        drupal_set_message(t('Updating @field_name on @entity_type with ID @entity_id', [
+        $messenger->addMessage(t('Updating @field_name on @entity_type with ID @entity_id', [
           '@field_name' => $item->data['field_name'],
           '@entity_type' => $item->data['entity_type'],
           '@entity_id' => $item->data['entity_id'],
@@ -284,7 +293,7 @@ function _media_assets_library_field_encryption() {
     }
   }
   $message = Drupal::translation()->formatPlural($i, 'One field updated.', '@count fields updated.');
-  drupal_set_message($message);
+  $messenger->addMessage($message);
 }
 
 /**

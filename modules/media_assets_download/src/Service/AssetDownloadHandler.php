@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\media_assets\Service;
+namespace Drupal\media_assets_download\Service;
 
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Datetime\DateFormatterInterface;
@@ -15,7 +15,7 @@ use function reset;
 /**
  * Class AssetDownloadHandler.
  *
- * @package Drupal\media_assets\Service
+ * @package Drupal\media_assets_download\Service
  */
 class AssetDownloadHandler {
 
@@ -48,11 +48,11 @@ class AssetDownloadHandler {
   /**
    * AssetDownloadHandler constructor.
    *
-   * @param \Drupal\media_assets\Service\AssetFileHandler $fileHandler
+   * @param \Drupal\media_assets_download\Service\AssetFileHandler $fileHandler
    *   File handler service.
-   * @param \Drupal\media_assets\Service\AssetArchiver $archiver
+   * @param \Drupal\media_assets_download\Service\AssetArchiver $archiver
    *   File archiver.
-   * @param \Drupal\media_assets\Service\FileManager $fileManager
+   * @param \Drupal\media_assets_download\Service\FileManager $fileManager
    *   File manager.
    * @param \Drupal\Core\File\FileSystemInterface $fileSystem
    *   The file system service.

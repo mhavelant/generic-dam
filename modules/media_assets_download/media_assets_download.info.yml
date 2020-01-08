@@ -1,9 +1,11 @@
-name: "Media Statistics"
+name: "Media Assets download"
 type: module
-description: Media statistics.
+description: Media assets download functionality
 core: 8.x
 package: 'Digital Assets Management'
+
 dependencies:
   - drupal:system (>=8.4)
   - drupal:media
-  - drupal:block
+  - drupal:file
+  - drupal:user
