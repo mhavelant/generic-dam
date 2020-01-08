@@ -8,8 +8,6 @@
 use Drupal\Core\Config\FileStorage;
 use Drupal\Core\Queue\SuspendQueueException;
 use Drupal\Core\Site\Settings;
-use Drupal\field\Entity\FieldConfig;
-use Drupal\field\Entity\FieldStorageConfig;
 
 /**
  * Change the schema from public to private.

@@ -2,7 +2,6 @@
 
 namespace Drupal\media_collection_share\Form;
 
-use Drupal;
 use Drupal\Component\Utility\EmailValidatorInterface;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\ReplaceCommand;

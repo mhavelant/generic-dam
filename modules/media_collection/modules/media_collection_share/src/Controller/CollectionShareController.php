@@ -2,12 +2,10 @@
 
 namespace Drupal\media_collection_share\Controller;
 
-use Drupal;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityViewBuilderInterface;
-use Drupal\Core\Url;
 use Drupal\media_collection_share\Service\CollectionSharer;
 use RuntimeException;
 use Symfony\Component\DependencyInjection\ContainerInterface;

@@ -3,7 +3,6 @@
 namespace Drupal\media_collection\Entity;
 
 use Drupal\Core\Entity\ContentEntityInterface;
-use Drupal\Core\Entity\EntityChangedInterface;
 use Drupal\image\ImageStyleInterface;
 use Drupal\media\MediaInterface;
 use Drupal\user\EntityOwnerInterface;

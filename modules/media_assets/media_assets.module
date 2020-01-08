@@ -360,6 +360,7 @@ function media_assets_views_post_render(ViewExecutable $view) {
     // Set the view title.
     $view->setTitle($title);
     // Set the route title.
+    /** @var \Symfony\Component\Routing\Route $route */
     $route = Drupal::routeMatch()->getCurrentRouteMatch()->getRouteObject();
     $route->setDefault('_title', $title);
   }

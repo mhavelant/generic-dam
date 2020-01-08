@@ -2,10 +2,6 @@
 
 namespace Drupal\media_collection\Entity;
 
-use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\Core\Field\BaseFieldDefinition;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
-
 /**
  * Defines the Media collection entity.
  *

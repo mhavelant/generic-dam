@@ -3,7 +3,6 @@
 namespace Drupal\media_collection_share\Entity;
 
 use Drupal;
-use Drupal\Component\Utility\EmailValidator;
 use Drupal\Component\Utility\EmailValidatorInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\EntityTypeInterface;
