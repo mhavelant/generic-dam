@@ -4,6 +4,6 @@ description: Media statistics.
 core: 8.x
 package: 'Digital Assets Management'
 dependencies:
-  - drupal:system (>=8.4)
+  - drupal:system (>=8.7)
   - drupal:media
   - drupal:block
