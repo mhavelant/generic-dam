@@ -11,6 +11,6 @@ dependencies:
   - drupal:rest
   - drupal:basic_auth
   - drupal:user
-  - drupal:taxonomy_term
+  - drupal:taxonomy
   - drupal:image
   - jsonapi_extras:jsonapi_extras
