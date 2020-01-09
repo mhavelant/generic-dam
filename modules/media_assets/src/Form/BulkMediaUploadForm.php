@@ -3,16 +3,11 @@
 namespace Drupal\media_assets\Form;
 
 use Drupal\Component\Render\PlainTextOutput;
-use Drupal\Core\Entity\EntityFieldManagerInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Logger\LoggerChannelFactoryInterface;
-use Drupal\Core\Utility\Token;
 use Drupal\media\MediaTypeInterface;
 use Drupal\media_upload\Form\BulkMediaUploadForm as ContribForm;
 use Exception;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use function explode;
 use function file_get_contents;
 use function file_save_data;
@@ -28,44 +23,6 @@ use function trim;
  * @see \Drupal\media_upload\Form\BulkMediaUploadForm
  */
 class BulkMediaUploadForm extends ContribForm {
-
-  /**
-   * The file system.
-   *
-   * @var \Drupal\Core\File\FileSystemInterface
-   */
-  protected $fileSystem;
-
-  /**
-   * {@inheritdoc}
-   *
-   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
-   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('entity_type.manager'),
-      $container->get('entity_field.manager'),
-      $container->get('logger.factory'),
-      $container->get('token'),
-      $container->get('file_system')
-    );
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function __construct(
-    EntityTypeManagerInterface $entityTypeManager,
-    EntityFieldManagerInterface $entityFieldManager,
-    LoggerChannelFactoryInterface $logger,
-    Token $token,
-    FileSystemInterface $fileSystem
-  ) {
-    parent::__construct($entityTypeManager, $entityFieldManager, $logger, $token);
-
-    $this->fileSystem = $fileSystem;
-  }
 
   /**
    * {@inheritdoc}
@@ -147,7 +104,8 @@ class BulkMediaUploadForm extends ContribForm {
 
       if (empty($values['dropzonejs']) || empty($values['dropzonejs']['uploaded_files'])) {
         $this->logger->warning('No documents were uploaded');
-        $this->messenger()->addMessage($this->t('No documents were uploaded'), 'warning');
+        $this->messenger()
+          ->addMessage($this->t('No documents were uploaded'), 'warning');
         return;
       }
 
@@ -174,7 +132,8 @@ class BulkMediaUploadForm extends ContribForm {
         if (preg_match(static::FILENAME_REGEX, $file['filename'], $fileInfo) !== 1) {
           $errorFlag = TRUE;
           $this->logger->warning('@filename - Incorrect file name', ['@filename' => $file['filename']]);
-          $this->messenger()->addMessage($this->t('@filename - Incorrect file name', ['@filename' => $file['filename']]), 'warning');
+          $this->messenger()
+            ->addMessage($this->t('@filename - Incorrect file name', ['@filename' => $file['filename']]), 'warning');
           continue;
         }
 
@@ -185,7 +144,8 @@ class BulkMediaUploadForm extends ContribForm {
         )) {
           $errorFlag = TRUE;
           $this->logger->error('@filename - File extension is not allowed', ['@filename' => $file['filename']]);
-          $this->messenger()->addMessage($this->t('@filename - File extension is not allowed', ['@filename' => $file['filename']]), 'error');
+          $this->messenger()
+            ->addMessage($this->t('@filename - File extension is not allowed', ['@filename' => $file['filename']]), 'error');
           continue;
         }
 
@@ -198,9 +158,10 @@ class BulkMediaUploadForm extends ContribForm {
           $this->logger->warning('@filename - File could not be saved.', [
             '@filename' => $file['filename'],
           ]);
-          $this->messenger()->addMessage('@filename - File could not be saved.', [
-            '@filename' => $file['filename'],
-          ], 'warning');
+          $this->messenger()
+            ->addMessage('@filename - File could not be saved.', [
+              '@filename' => $file['filename'],
+            ], 'warning');
           continue;
         }
 
@@ -221,20 +182,24 @@ class BulkMediaUploadForm extends ContribForm {
       $form_state->set('created_media', $createdMedia);
       if ($errorFlag && !$fileCount) {
         $this->logger->warning('No documents were uploaded');
-        $this->messenger()->addMessage($this->t('No documents were uploaded'), 'warning');
+        $this->messenger()
+          ->addMessage($this->t('No documents were uploaded'), 'warning');
         return;
       }
 
       if ($errorFlag) {
         $this->logger->info('Some documents have not been uploaded');
-        $this->messenger()->addMessage($this->t('Some documents have not been uploaded'), 'warning');
+        $this->messenger()
+          ->addMessage($this->t('Some documents have not been uploaded'), 'warning');
         $this->logger->info('@fileCount documents have been uploaded', ['@fileCount' => $fileCount]);
-        $this->messenger()->addMessage($this->t('@fileCount documents have been uploaded', ['@fileCount' => $fileCount]));
+        $this->messenger()
+          ->addMessage($this->t('@fileCount documents have been uploaded', ['@fileCount' => $fileCount]));
         return;
       }
 
       $this->logger->info('@fileCount documents have been uploaded', ['@fileCount' => $fileCount]);
-      $this->messenger()->addMessage($this->t('@fileCount documents have been uploaded', ['@fileCount' => $fileCount]));
+      $this->messenger()
+        ->addMessage($this->t('@fileCount documents have been uploaded', ['@fileCount' => $fileCount]));
       return;
     }
     catch (Exception $e) {

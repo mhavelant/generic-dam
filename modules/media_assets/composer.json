@@ -14,10 +14,6 @@
             "type": "composer",
             "url": "https://packages.drupal.org/8"
         },
-        "media_upload": {
-            "type": "vcs",
-            "url": "https://github.com/brainsum/media_upload.git"
-        },
         "dropzone": {
             "type": "package",
             "package": {
@@ -32,9 +28,14 @@
         }
     },
     "require": {
+        "brainsum/media_upload": "^3.0",
         "drupal/core": "^8.7",
         "drupal/focal_point": "^1.2",
-        "drupal/media_upload": "^1.7",
         "enyo-drupal/dropzone": "^4.3"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true
     }
 }

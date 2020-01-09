@@ -14,10 +14,6 @@
             "type": "composer",
             "url": "https://packages.drupal.org/8"
         },
-        "media_upload": {
-            "type": "vcs",
-            "url": "https://github.com/brainsum/media_upload.git"
-        },
         "dropzone": {
             "type": "package",
             "package": {
@@ -35,7 +31,7 @@
         "php": "^7.2",
         "ext-json": "*",
         "ext-zip": "*",
-        "brainsum/media_upload": "dev-8.x-2.x",
+        "brainsum/media_upload": "^3.0",
         "drupal/core": "^8.7",
         "drupal/filehash": "^1.2",
         "drupal/focal_point": "^1.2",
