@@ -18,5 +18,10 @@
     "require": {
         "drupal/core": "^8.7",
         "drupal/jsonapi_extras": "^3.13"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true
     }
 }

@@ -16,7 +16,11 @@
         }
     },
     "require": {
-        "ext-json": "*",
         "drupal/core": "^8.7"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true
     }
 }

@@ -1,6 +1,6 @@
 {
-    "name": "brainsum/media_assets_download",
-    "description": "Download options for media assets.",
+    "name": "brainsum/media_collection_share",
+    "description": "Allows sharing Collections of media assets.",
     "type": "drupal-module",
     "license": "GPL-2.0-or-later",
     "authors": [
@@ -16,8 +16,9 @@
         }
     },
     "require": {
-        "ext-zip": "*",
-        "drupal/core": "^8.7"
+        "ext-json": "*",
+        "drupal/core": "^8.7",
+        "drupal/maillog": "1.x-dev"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
